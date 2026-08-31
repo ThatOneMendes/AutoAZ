@@ -15,12 +15,13 @@ Você simplesmente diz quais matérias e capítulos essa extensão deve fazer au
         * Uma janela vai abrir pedindo para você escolher um arquivo.
         * Navegue até a pasta descomprimida do AutoAZ, escolha o arquivo "manifest.json" e confirme
         * Agora o AutoAZ está carregado!
-        > [!NOTE]
-        > A extensão não é instalada, mais sim carregada temporariamente!
-        > Toda vez que você quiser usar o AutoAZ você terá que seguir esses passos de novo.
     * Google Chrome e Microsoft Edge
         * Abra uma nova aba, digite "chrome://extensions" na barra de navegação e aperte enter.
         * Ache a opção "Modo do desenvolvedor" e ative ela.
         * Aperte no botão "Carregar sem compactação"
         * Selecione a pasta descomprimida do AutoAZ e confirme.
         * Agora o AutoAZ está instalado! Pelo menos até você desativar o modo do desenvolvedor.
+
+> [!NOTE]
+> No Firefox, a extensão não é instalada, mais sim carregada temporariamente!
+> Toda vez que você quiser usar o AutoAZ você terá que seguir os passos de instalação novamente.
