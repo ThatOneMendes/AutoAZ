@@ -1,0 +1,36 @@
+{
+    "manifest_version": 3,
+    "name": "AutoAZ",
+    "version": "1.0",
+    "description": "Faz as folhas AZ automaticamente.",
+    "icons": {
+        "32": "icons/icon-32.png"
+    },
+    "action": {
+        "default_popup": "src/index.html",
+        "default_icon": "icons/icon-32.png"
+    },
+    "background": {
+        "service_worker": "src/background.js",
+        "scripts": ["src/background.js"]
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://redeaz.com.br/*",
+                "https://*.app.redeaz.com.br/*"
+            ],
+            "js": ["src/index.js"],
+            "run_at": "document_end"
+        },
+        {
+            "matches": [
+                "https://redeaz.com.br/*",
+                "https://*.app.redeaz.com.br/*"
+            ],
+            "js": ["src/page-hooks.js"],
+            "run_at": "document_start",
+            "world": "MAIN"
+        }
+    ]
+}
