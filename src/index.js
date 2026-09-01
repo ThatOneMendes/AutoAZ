@@ -371,7 +371,10 @@ async function solveFascicle(materia, capitulo, respostas) {
                 'Não conseguimos encontrar o botão "Atividades AZ"! OOPS! Talvez você não consiga automatizar esse capítulo...',
             ),
     );
-    if (!header) return await cleanupAndgoBack();
+    if (!header)
+        return await cleanupAndgoBack(
+            'O botão "Atividades AZ" não foi encontrado.',
+        );
 
     await delay(semiBelievableDelay());
 
@@ -383,7 +386,8 @@ async function solveFascicle(materia, capitulo, respostas) {
                 'Não conseguimos encontrar o botão "AZ Check"! Talvez você não consiga automatizar esse capítulo...',
             ),
     );
-    if (!azCheckButton) return await cleanupAndgoBack();
+    if (!azCheckButton)
+        return await cleanupAndgoBack('O botão "AZ Check" não foi encontrado');
 
     const azCheckInner = azCheckButton.innerHTML.toLowerCase();
 
@@ -414,7 +418,10 @@ async function solveFascicle(materia, capitulo, respostas) {
         ).catch(() =>
             console.warn('Não conseguimos encontrar o botão de "Começar"!'),
         );
-        if (!startButton) await leaveAZCheckInterface();
+        if (!startButton)
+            await leaveAZCheckInterface(
+                'A AZ Check não foi iniciada e nós não encontramos o botão de "Começar".',
+            );
 
         await delay(semiBelievableDelay());
 
@@ -425,7 +432,10 @@ async function solveFascicle(materia, capitulo, respostas) {
         "tabs-questions",
         basicIdFinder,
     ).catch(() => console.warn("Não encontramos a aba de questões..."));
-    if (!tabsQuestions) return await leaveAZCheckInterface();
+    if (!tabsQuestions)
+        return await leaveAZCheckInterface(
+            "Não encontramos a aba de questões.",
+        );
 
     let question = await findElement(
         () => tabsQuestions.parentElement.nextElementSibling,
@@ -435,7 +445,10 @@ async function solveFascicle(materia, capitulo, respostas) {
             "Não conseguimos encontrar a questão inicial! Vamos tentar outro capítulo...",
         ),
     );
-    if (!question) return await leaveAZCheckInterface();
+    if (!question)
+        return await leaveAZCheckInterface(
+            "Não encontramos a questão inicial.",
+        );
 
     {
         const responseCardButton = await findElement(
@@ -444,7 +457,10 @@ async function solveFascicle(materia, capitulo, respostas) {
         ).catch(() =>
             console.warn("Não encontramos o botão do Cartão de Respostas!"),
         );
-        if (!responseCardButton) return await leaveAZCheckInterface();
+        if (!responseCardButton)
+            return await leaveAZCheckInterface(
+                "Não encontramos o botão do Cartão de Respostas.",
+            );
 
         await delay(semiBelievableDelay());
 
@@ -459,7 +475,10 @@ async function solveFascicle(materia, capitulo, respostas) {
             "Não conseguimos encontrar a questão inicial! Vamos tentar outro capítulo...",
         ),
     );
-    if (!question) return await leaveAZCheckInterface();
+    if (!question)
+        return await leaveAZCheckInterface(
+            "Não encontramos a questão 1 do cartão de respostas.",
+        );
 
     let pressedThatAnswerButton = false;
 
@@ -541,7 +560,9 @@ async function solveFascicle(materia, capitulo, respostas) {
                 "Uma questão não possui nenhum botão de resposta! Algo deve ter dado MUITO errado pra isso acontecer. Vamos tentar fazer outro capítulo.",
             );
             console.error("HTMLElement da questão:", question);
-            return await leaveAZCheckInterface();
+            return await leaveAZCheckInterface(
+                "Questão não tinha nenhuma opção de resposta.",
+            );
         }
 
         let chosenAnswer;

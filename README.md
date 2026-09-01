@@ -23,5 +23,6 @@ Você simplesmente diz quais matérias e capítulos essa extensão deve fazer au
         * Agora o AutoAZ está instalado! Pelo menos até você desativar o modo do desenvolvedor.
 
 > [!NOTE]
-> No Firefox, a extensão não é instalada, mais sim carregada temporariamente!
+> Caso você entrou na Rede AZ **antes** de instalar a extensão, você deve recarregar a página da Rede AZ.
+> No Firefox, a extensão não é instalada, mais sim carregada temporariamente.
 > Toda vez que você quiser usar o AutoAZ você terá que seguir os passos de instalação novamente.

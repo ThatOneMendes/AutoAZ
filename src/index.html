@@ -18,6 +18,11 @@
                 resize: none;
             }
 
+            textarea:read-only {
+                background-color: #cccccc !important;
+                color: #333333;
+            }
+
             button {
                 width: 100%;
                 padding: 8px;
@@ -81,10 +86,7 @@
         <h2>Como usar:</h2>
         <ol>
             <li>Vá para a aba de atividades</li>
-            <li>
-                Coloque as matérias e capítulos na caixa de texto (matérias são
-                separadas por linhas e capítulos por vírgulas)
-            </li>
+            <li>Coloque as matérias e capítulos na caixa de texto</li>
             <li>
                 Se você quiser, coloque uma lista de respostas na segunda caixa
                 de texto. O AutoAZ vai usar essas respostas ao invés de
@@ -98,33 +100,32 @@
             ser usado. Por favor entenda.
         </p>
         <h2>Lista de matérias e capítulos:</h2>
-        <p>
-            Faça questão de incluir acentos gráficos no nome das matérias, eles
-            importam!
-        </p>
-        <textarea id="lista"></textarea>
-        <h2>Lista de respostas</h2>
-        <p>
-            Pode ficar vazio caso você queira que o AutoAZ responda
-            aleatóriamente
-        </p>
-        <textarea id="respostas"></textarea>
-        <button id="vamos-comecar-a-trollagem">Começar</button>
         <p>Exemplo de lista de matérias:</p>
 
         <!-- prettier-ignore-start -->
         <textarea readonly="true" style="min-height: auto">
 Biologia 1:1,2,4,9,14
 Física 1:6,8,9,12
-Sociologia:6,7,14,8</textarea>
+Sociologia:6,7,14,8</textarea
+        ><br />
+
+        <!-- prettier-ignore-end -->
         <p>
-            A lista de resposta é formatada assim: MATÉRIA:CAPÍTULO:RESPOSTAS<br />Onde
-            cada letra é a resposta de uma questão. A primeira letra é a questão
-            1. Respostas de questões que não existem serão ignoradas (Letra A
-            para a questão 11 seria ignorada pois a questão 11 não existe, pelo
-            menos nas AZ Checks do 3º ano do ensino médio.)<br />Caso você
-            coloque uma letra que não existe na questão, o AutoAZ vai responder
-            a questão aleatóriamente.
+            Faça questão de incluir acentos gráficos no nome das matérias, eles
+            importam!
+        </p>
+        <textarea id="lista"></textarea>
+        <h2>Lista de respostas</h2>
+
+        <!-- prettier-ignore-start -->
+        <p>
+            A lista de respostas é formatada assim:
+            MATÉRIA:CAPÍTULO:RESPOSTAS<br />Onde cada letra é a resposta de uma
+            questão. A primeira letra é a questão 1. Respostas de questões que
+            não existem serão ignoradas (Letra A para a questão 11 seria
+            ignorada pois a questão 11 não existe, pelo menos nas AZ Checks do
+            3º ano do ensino médio.)<br />Caso você coloque uma letra que não
+            existe na questão, o AutoAZ vai responder a questão aleatóriamente.
         </p>
         <p>Exemplo de lista de respostas:</p>
         <textarea readonly="true" style="min-height: auto">
@@ -143,6 +144,12 @@ Sociologia:14:ABEEBACDAD
 Sociologia:8:DDDAACADED</textarea>
 
         <!-- prettier-ignore-end -->
+        <p>
+            Pode ficar vazio caso você queira que o AutoAZ responda
+            aleatóriamente
+        </p>
+        <textarea id="respostas"></textarea>
+        <button id="vamos-comecar-a-trollagem">Começar</button>
         <h2>Log da extensão:</h2>
         <div id="log-console" class="log-container"></div>
         <script src="popup.js"></script>
