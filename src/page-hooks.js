@@ -1,4 +1,5 @@
-const browser = globalThis.browser ?? globalThis.chrome;
+/** @type {typeof browser} */
+const ext = globalThis.browser ?? globalThis.chrome;
 
 // PAGE CHANGE HOOKS
 

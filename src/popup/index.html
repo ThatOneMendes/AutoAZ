@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <link rel="stylesheet" href="reset.css">
+        <link rel="stylesheet" href="firefox.css">
+        <link rel="stylesheet" href="style.css">        
+    </head>
+
+    <body>
+        <div style="display: none">
+            <table>
+                <tr id="placeholder-linha-de-lista">
+                    <td><input class="caixa-texto materia-input" type="text" placeholder="MATÉRIA" required></input></td>
+                    <td><input class="caixa-texto capitulo-input" type="text" placeholder="CAPÍTULOS" required></input></td>
+                    <td><button class="remover-cartela">-</button></td>
+                </tr>
+                <tr id="placeholder-linha-de-resposta">
+                    <td><input class="caixa-texto materia-input" type="text" placeholder="MATÉRIA" required></input></td>
+                    <td><input class="caixa-texto capitulo-input" type="text" inputmode="numeric" placeholder="CAPÍTULO" required></input></td>
+                    <td><input class="caixa-texto respostas-input" type="text" placeholder="RESPOSTAS" required></input></td>
+                    <td><button class="remover-cartela">-</button></td>
+                </tr>
+            </table>
+        </div>
+        <div class="title">
+            <img width="64" height="64" src="../../icons/icon64_0.png" />
+            <h1>AutoAZ</h1>
+        </div>
+        <p>Extensão que faz a folha AZ automaticamente.</p>
+    <h2>Como usar:</h2>
+        <ol>
+            <li>Vá para a aba de <a href="https://app.redeaz.com.br/atividades" id="atividades-link">atividades</a></li>
+            <li>Coloque as matérias e capítulos na caixa de texto</li>
+            <li>
+                Se você quiser, coloque uma lista de respostas na segunda caixa
+                de texto. O AutoAZ vai usar essas respostas ao invés de
+                responder aleatóriamente.
+            </li>
+            <li>Aperte o botão "Começar"</li>
+            <li>Veja o navegador responder tudo sozinho.</li>
+        </ol>
+        <p class="bold">
+            Enquanto a extensão está fazendo o seu trabalho o navegador não pode
+            ser usado. Por favor entenda.
+        </p>
+        <h2>Lista de matérias e capítulos:</h2>
+        <p>Exemplo de lista de matérias: <a href="javascript:void(0)" id="mostrar-tabela-exemplo-materias">(clique em mim para mostrar.)</a></p>
+        <div id="exemplo-materias" style="display: none;">
+            <table>
+                <tbody class="lista-materias">
+                    <tr>
+                        <th>Matéria</th>
+                        <th>Capítulos</th>
+                    </tr>
+                    <tr>
+                        <td><input class="caixa-texto" type="text" placeholder="MATÉRIA" value="Biologia 1" readonly="true"></input></td>
+                        <td><input class="caixa-texto" type="text" placeholder="CAPÍTULOS" value="1, 2, 4, 9, 14" readonly="true"></input></td>
+                    </tr>
+                    <tr>
+                        <td><input class="caixa-texto" type="text" placeholder="MATÉRIA" value="Física 1" readonly="true"></input></td>
+                        <td><input class="caixa-texto" type="text" placeholder="CAPÍTULOS" value="6, 8, 9, 12" readonly="true"></input></td>
+                    </tr>
+                    <tr>
+                        <td><input class="caixa-texto" type="text" placeholder="MATÉRIA" value="Sociologia" readonly="true"></input></td>
+                        <td><input class="caixa-texto" type="text" placeholder="CAPÍTULOS" value="6~8, 14" readonly="true"></input></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="bold">
+            Faça questão de incluir acentos gráficos no nome das matérias, eles
+            importam!
+        </p>
+        <form id="form-parametros">
+            <table>
+                <tbody id="lista-materias" class="lista-materias">
+                    <tr>
+                        <th>Matéria</th>
+                        <th>Capítulos</th>
+                        <th><button class="nova-cartela">+</button></th>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="display: none;"><textarea id="lista"></textarea></div>
+            <h2>Lista de respostas</h2>
+            <p>
+                A lista de respostas é formatada assim:
+                MATÉRIA:CAPÍTULO:RESPOSTAS<br />Onde cada letra é a resposta de uma
+                questão. A primeira letra é a questão 1. Respostas de questões que
+                não existem serão ignoradas (Letra A para a questão 11 seria
+                ignorada pois a questão 11 não existe, pelo menos nas AZ Checks do
+                3º ano do ensino médio.)<br />Caso você coloque uma letra que não
+                existe na questão, o AutoAZ vai responder a questão aleatóriamente.
+            </p>
+            <p>Exemplo de lista de respostas: <a href="javascript:void(0)" id="mostrar-tabela-exemplo-respostas">(clique em mim para mostrar.)</a></p>
+            <div id="exemplo-respostas" style="display: none;">
+                <table>
+                    <tbody class="lista-respostas">
+                        <tr>
+                            <th>Matéria</th>
+                            <th>Capítulo</th>
+                            <th>Respostas</th>
+                        </tr>
+                        <tr>
+                            <td><input class="caixa-texto" type="text" placeholder="MATÉRIA" value="Biologia 1" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="CAPÍTULO" value="1" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="RESPOSTAS" value="AEDACEDACD" readonly="true"></input></td>
+                        </tr>
+                        <tr>
+                            <td><input class="caixa-texto" type="text" placeholder="MATÉRIA" value="Biologia 1" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="CAPÍTULO" value="2" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="RESPOSTAS" value="DBDAABBCCB" readonly="true"></input></td>
+                        </tr>
+                        <tr>
+                            <td><input class="caixa-texto" type="text" placeholder="MATÉRIA" value="Biologia 1" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="CAPÍTULO" value="4" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="RESPOSTAS" value="AAEBDDEEBD" readonly="true"></input></td>
+                        </tr>
+                        <tr>
+                            <td><input class="caixa-texto" type="text" placeholder="MATÉRIA" value="Biologia 1" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="CAPÍTULO" value="9" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="RESPOSTAS" value="BCDBACECEE" readonly="true"></input></td>
+                        </tr>
+                        <tr>
+                            <td><input class="caixa-texto" type="text" placeholder="MATÉRIA" value="Biologia 1" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="CAPÍTULO" value="14" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="RESPOSTAS" value="ABDCBBEDAB" readonly="true"></input></td>
+                        </tr>
+                        <tr>
+                            <td><input class="caixa-texto" type="text" placeholder="MATÉRIA" value="Física 1" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="CAPÍTULO" value="6" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="RESPOSTAS" value="DCEDEAEDEA" readonly="true"></input></td>
+                        </tr>
+                        <tr>
+                            <td><input class="caixa-texto" type="text" placeholder="MATÉRIA" value="Física 1" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="CAPÍTULO" value="8" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="RESPOSTAS" value="DACCDCAAAD" readonly="true"></input></td>
+                        </tr>
+                        <tr>
+                            <td><input class="caixa-texto" type="text" placeholder="MATÉRIA" value="Física 1" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="CAPÍTULO" value="9" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="RESPOSTAS" value="BEDBDBCDDD" readonly="true"></input></td>
+                        </tr>
+                        <tr>
+                            <td><input class="caixa-texto" type="text" placeholder="MATÉRIA" value="Física 1" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="CAPÍTULO" value="12" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="RESPOSTAS" value="EBECCBBEAA" readonly="true"></input></td>
+                        </tr>
+                        <tr>
+                            <td><input class="caixa-texto" type="text" placeholder="MATÉRIA" value="Sociologia" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="CAPÍTULO" value="6" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="RESPOSTAS" value="EDACEEEDEA" readonly="true"></input></td>
+                        </tr>
+                        <tr>
+                            <td><input class="caixa-texto" type="text" placeholder="MATÉRIA" value="Sociologia" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="CAPÍTULO" value="7" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="RESPOSTAS" value="BDEEABEDEA" readonly="true"></input></td>
+                        </tr>
+                        <tr>
+                            <td><input class="caixa-texto" type="text" placeholder="MATÉRIA" value="Sociologia" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="CAPÍTULO" value="14" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="RESPOSTAS" value="ABEEBACDAD" readonly="true"></input></td>
+                        </tr>
+                        <tr>
+                            <td><input class="caixa-texto" type="text" placeholder="MATÉRIA" value="Sociologia" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="CAPÍTULO" value="8" readonly="true"></input></td>
+                            <td><input class="caixa-texto" type="text" placeholder="RESPOSTAS" value="DDDAACADED" readonly="true"></input></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div> 
+            <p>
+                Pode ficar vazio caso você queira que o AutoAZ responda
+                aleatóriamente
+            </p>
+            <table>
+                <tbody id="lista-respostas" class="lista-respostas">
+                    <tr>
+                        <th>Matéria</th>
+                        <th>Capítulo</th>
+                        <th>Respostas</th>
+                        <th><button class="nova-cartela">+</button></th>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="display: none"><textarea id="respostas"></textarea></div>
+            <button id="vamos-comecar-a-trollagem" class="comecar" type="submit">Começar</button>
+        </form>
+        <h2>Log da extensão:</h2>
+        <div id="log-console" class="log-container"></div>
+        <script src="../utils.js"></script>
+        <script src="tabelas.js"></script>
+        <script src="popup.js"></script>
+    </body>
+</html>

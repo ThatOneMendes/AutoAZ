@@ -1,95 +1,9 @@
-const browser = globalThis.browser ?? globalThis.chrome;
+/** @type {typeof browser} */
+const ext = globalThis.browser ?? globalThis.chrome;
 
-const letters = ["A", "B", "C", "D", "E"];
-
-const delay = (time) => new Promise((resolve) => setTimeout(resolve, time));
-const lerp = (start, goal, alpha) => start + (goal - start) * alpha;
-const semiBelievableDelay = () => lerp(527, 1354, Math.random());
-const getRandomElementOfArray = (array) => {
-    const index = Math.floor(Math.random() * array.length);
-    if (index >= array.length) index = array.length - 1;
-    return array[index];
-};
-
-/**
- * @param {Array<string>} array
- * @returns {Array<string>}
- **/
-const trimArray = (array) =>
-    array.filter((str) => typeof str == "string" && str.trim() !== "");
+const port = ext.runtime.connect({ name: "index" });
 
 history.back = () => window.dispatchEvent(new CustomEvent("history_back"));
-
-function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
-
-function format(...args) {
-    const f = args[0];
-    let i = 1;
-
-    if (typeof f !== "string") {
-        if (args.length === 0) return "";
-        return args
-            .map((arg) =>
-                typeof arg === "object" ? JSON.stringify(arg) : String(arg),
-            )
-            .join(" ");
-    }
-
-    if (args.length === 1) return f;
-
-    let str = f.replace(/%[sdifjoO%]/g, (match) => {
-        if (match === "%%") return "%";
-        if (i >= args.length) return match;
-
-        const val = args[i++];
-        switch (match) {
-            case "%s":
-                return String(val);
-            case "%d":
-            case "%i":
-                return String(parseInt(val, 10));
-            case "%f":
-                return String(parseFloat(val));
-            case "%j":
-                try {
-                    return JSON.stringify(val);
-                } catch (_) {
-                    return "[Circular]";
-                }
-            case "%o":
-            case "%O":
-                try {
-                    return JSON.stringify(val, null, 2);
-                } catch (_) {
-                    return String(val);
-                }
-            default:
-                return match;
-        }
-    });
-
-    while (i < args.length) {
-        const val = args[i++];
-        if (val === null || typeof val !== "object") {
-            str += " " + val;
-        } else {
-            try {
-                str += " " + JSON.stringify(val);
-            } catch (_) {
-                str += " " + String(val);
-            }
-        }
-    }
-
-    return str;
-}
 
 const oldConsoleLog = console.log;
 const oldConsoleError = console.error;
@@ -97,28 +11,28 @@ const oldConsoleWarn = console.warn;
 
 console.log = function (...data) {
     oldConsoleLog(...data);
-    browser.runtime.sendMessage({
+    port.postMessage({
         action: "log",
         level: "LOG",
-        content: format(...data),
+        content: utils.format(...data),
     });
 };
 
 console.warn = function (...data) {
     oldConsoleWarn(...data);
-    browser.runtime.sendMessage({
+    port.postMessage({
         action: "log",
         level: "WARN",
-        content: format(...data),
+        content: utils.format(...data),
     });
 };
 
 console.error = function (...data) {
     oldConsoleError(...data);
-    browser.runtime.sendMessage({
+    port.postMessage({
         action: "log",
         level: "ERROR",
-        content: format(...data),
+        content: utils.format(...data),
     });
 };
 
@@ -146,19 +60,6 @@ const activityFinder = (activityName) =>
         (element) =>
             element.querySelector(":scope > p")?.textContent.toLowerCase() ===
             activityName.toLowerCase(),
-    );
-
-const firstParagraphFinder = (text) =>
-    [...document.querySelectorAll("p")].find((element) =>
-        element?.textContent.toLowerCase().includes(text.toLowerCase()),
-    );
-
-const checkExitFinder = (h2Text) =>
-    [...document.querySelectorAll('a[role="button"]')].find((element) =>
-        element.parentElement
-            .querySelector(":scope > h2")
-            ?.textContent.toLowerCase()
-            .includes(h2Text),
     );
 
 const confirmationModalFinder = (label) =>
@@ -228,26 +129,7 @@ async function solveFascicle(materia, capitulo, respostas) {
         console.log("Limpando e saíndo");
         history.back();
 
-        /*const header = await findElement(materia, firstParagraphFinder).catch(
-            () =>
-                console.error(
-                    "Não conseguimos encontrar o cabeçalho desse fasículo! Um erro grave o suficiente para termos que parar o AutoAZ. Sinto muito.",
-                ),
-        );
-        if (!header) return false;
-
-        const exitButton =
-            header.parentElement.parentElement.querySelector("button");
-        if (!exitButton) {
-            console.error(
-                "Não conseguimos encontrar o botão de volta desse fascículo! Um erro grave o suficiente para termos que parar o AutoAZ. Mil desculpas...",
-            );
-            return false;
-        }
-
-        exitButton.click();*/
-
-        await delay(semiBelievableDelay());
+        await utils.delay(utils.semiBelievableDelay());
         return true;
     }
 
@@ -284,49 +166,12 @@ async function solveFascicle(materia, capitulo, respostas) {
                 return false;
             }
 
-            await delay(semiBelievableDelay());
+            await utils.delay(utils.semiBelievableDelay());
 
             confirmButton.click();
         }
 
-        /*const exitButton = await findElement("AZ Check", checkExitFinder).catch(
-            () =>
-                console.error(
-                    "Não conseguimos encontrar o botão para sair da interface do AZ Check. Não podemos continuar. Me desculpe.",
-                ),
-        );
-        if (!exitButton) return false;
-
-        exitButton.click();
-
-        await delay(semiBelievableDelay());
-
-        confirmOurExit: {
-            const confirmationModal = await findElement(
-                "confirmation-dialog",
-                confirmationModalFinder,
-                3000,
-            ).catch(() =>
-                console.warn(
-                    "Não encontramos o modal de confirmar pra sair. Não é um problema tão grande a não ser que o modal esteja lá so que nós não encontramos de alguma forma...",
-                ),
-            );
-            if (!confirmationModal) break confirmOurExit;
-
-            const confirmButton = confirmationModal.querySelector(
-                'button[id="modal_confirm"]',
-            );
-            if (!confirmButton) {
-                console.error(
-                    "Nós encontramos o modal de confirmação mas não encontramos o botão de confirmar... Esse é um GRANDE problema! Sinto muito, vamos ter que para aqui.",
-                );
-                return false;
-            }
-
-            confirmButton.click();
-        }*/
-
-        await delay(semiBelievableDelay());
+        await utils.delay(utils.semiBelievableDelay());
 
         return await cleanupAndgoBack();
     }
@@ -361,7 +206,7 @@ async function solveFascicle(materia, capitulo, respostas) {
         return true;
     }
 
-    await delay(semiBelievableDelay());
+    await utils.delay(utils.semiBelievableDelay());
 
     fasiculo.click();
 
@@ -376,7 +221,7 @@ async function solveFascicle(materia, capitulo, respostas) {
             'O botão "Atividades AZ" não foi encontrado.',
         );
 
-    await delay(semiBelievableDelay());
+    await utils.delay(utils.semiBelievableDelay());
 
     header.click();
 
@@ -396,7 +241,7 @@ async function solveFascicle(materia, capitulo, respostas) {
         return await cleanupAndgoBack();
     }
 
-    await delay(semiBelievableDelay());
+    await utils.delay(utils.semiBelievableDelay());
 
     azCheckButton.click();
 
@@ -423,7 +268,7 @@ async function solveFascicle(materia, capitulo, respostas) {
                 'A AZ Check não foi iniciada e nós não encontramos o botão de "Começar".',
             );
 
-        await delay(semiBelievableDelay());
+        await utils.delay(utils.semiBelievableDelay());
 
         startButton.click();
     }
@@ -462,7 +307,7 @@ async function solveFascicle(materia, capitulo, respostas) {
                 "Não encontramos o botão do Cartão de Respostas.",
             );
 
-        await delay(semiBelievableDelay());
+        await utils.delay(utils.semiBelievableDelay());
 
         responseCardButton.click();
     }
@@ -504,7 +349,7 @@ async function solveFascicle(materia, capitulo, respostas) {
                 }
             }
 
-            await delay(semiBelievableDelay());
+            await utils.delay(utils.semiBelievableDelay());
 
             answerButton.click();
 
@@ -522,11 +367,11 @@ async function solveFascicle(materia, capitulo, respostas) {
             );
             if (!closeButton) return false;
 
-            await delay(semiBelievableDelay());
+            await utils.delay(utils.semiBelievableDelay());
 
             closeButton.click();
 
-            await delay(semiBelievableDelay());
+            await utils.delay(utils.semiBelievableDelay());
             await leaveAZCheckInterface();
             break;
         }
@@ -578,7 +423,7 @@ async function solveFascicle(materia, capitulo, respostas) {
                     break getPredefinedAnswer;
                 }
                 resposta = resposta.toUpperCase();
-                const respostaIndex = letters.indexOf(resposta);
+                const respostaIndex = utils.letters.indexOf(resposta);
                 if (respostaIndex < 0) {
                     console.warn(
                         "A resposta da questão %d é inválida! Vamos responder aleatóriamente! (Não existe letra %s)",
@@ -603,7 +448,7 @@ async function solveFascicle(materia, capitulo, respostas) {
             }
         }
 
-        if (answerDots.length > 1) shuffle(answerDots);
+        if (answerDots.length > 1) utils.shuffle(answerDots);
 
         for (const answerDot of answerDots) {
             const answerStyle = getComputedStyle(answerDot);
@@ -647,7 +492,7 @@ async function solveFascicle(materia, capitulo, respostas) {
 
         console.log("Achamos o botão de resposta! Vamos clicar!");
         chosenAnswer.click();
-        await delay(semiBelievableDelay());
+        await utils.delay(utils.semiBelievableDelay());
         console.log("Próximo!");
         question = question.nextElementSibling;
     }
@@ -679,6 +524,7 @@ async function solveFascicle(materia, capitulo, respostas) {
  **/
 async function startTheTrolling(listaDeMaterias, listaDeRespostas) {
     inProgress = true;
+    port.postMessage({ action: "set_activity_state", active: true });
     cardSolver: for (const [materia, capitulos] of Object.entries(
         listaDeMaterias,
     )) {
@@ -696,7 +542,7 @@ async function startTheTrolling(listaDeMaterias, listaDeRespostas) {
             continue;
         }
 
-        await delay(semiBelievableDelay());
+        await utils.delay(utils.semiBelievableDelay());
 
         card.click();
 
@@ -715,6 +561,7 @@ async function startTheTrolling(listaDeMaterias, listaDeRespostas) {
         history.back();
     }
 
+    port.postMessage({ action: "set_activity_state", active: false });
     console.log("Terminamos!");
 
     if (Object.keys(errors).length > 0) {
@@ -746,136 +593,13 @@ const eventActions = {
             console.warn("Nós já estamos respondendo a uma lista!");
             return;
         }
-
-        if (
-            trimArray(
-                window.location.href.split("?")[0].split("/").reverse(),
-            )[0].endsWith("atividades") === false
-        ) {
-            console.error(
-                "Não podemos começar aqui! Vá para a pagina de atividades! (https://app.redeaz.com.br/atividades)",
-            );
-            return;
-        }
-
-        console.log("AutoAZ vai começar agora.");
-        /** @type {string} **/
-        const texto = data.content;
-
-        if (texto.length <= 0) {
-            console.warn("Nos entregaram uma lista de matérias vazia...");
-            return;
-        }
-
-        let materiasECapitulos = {};
-        const materiasText = texto.split("\n");
-        for (let index = 0; index < materiasText.length; index++) {
-            const materia = materiasText[index];
-            if (materia.length <= 0) continue;
-
-            const [nome, capitulosText] = materia.split(":");
-            if (nome.length <= 0 || capitulosText.length <= 0) {
-                console.warn(
-                    'Matéria inválida. Vamos pular essa aí. (nome: "%s", capítulos string: "%s")',
-                    nome,
-                    capitulosText,
-                );
-                continue;
-            }
-
-            const capitulos = capitulosText.split(",");
-            materiasECapitulos[nome] = [];
-
-            for (let jindex = 0; jindex < capitulos.length; jindex++) {
-                const capitulo = Number(capitulos[jindex] || NaN);
-                if (Number.isNaN(capitulo)) {
-                    console.warn(
-                        'Numero de capítulo inválido para matéria "%s": "%s"',
-                        nome,
-                        capitulos[jindex],
-                    );
-                    continue;
-                }
-
-                materiasECapitulos[nome].push(capitulo);
-            }
-
-            if (materiasECapitulos[nome].length <= 0) {
-                console.warn(
-                    'Matéria "%s" não possui nenhum capítulo válido.',
-                    nome,
-                );
-                delete materiasECapitulos[nome];
-            }
-        }
-
-        /** @type {string} **/
-        const respostasText = data.answers;
-        let materiasCapitulosERespostas = {};
-        parseAnswers: {
-            if (respostasText.length <= 0) {
-                console.log(
-                    "Nos deram uma lista de respostas vazia. Vamos responder aleatoriamente.",
-                );
-                break parseAnswers;
-            }
-
-            const respostasChunks = trimArray(respostasText.split("\n"));
-            for (let index = 0; index < respostasChunks.length; index++) {
-                const respostaChunk = respostasChunks[index];
-                const [materia, capitulo, respostas] = respostaChunk.split(":");
-                if (!(materia && capitulo && respostas)) {
-                    console.warn(
-                        "Parametros inválidos em uma chunk de resposta!",
-                    );
-                    console.warn('Deveria ser: "MATÉRIA:CAPÍTULO:RESPOSTAS"');
-                    console.warn(
-                        `É: "${materia || "INVÁLIDO"}:${capitulo || "INVÁLIDO"}:${respostas || "INVÁLIDO"}"`,
-                    );
-                    continue;
-                }
-                if (!materiasECapitulos[materia]) {
-                    console.warn(
-                        `A matéria ${materia} inclusa na lista de respostas não está na lista de matérias a serem respondidas! Vamos ignorar essa matéria.`,
-                    );
-                    continue;
-                }
-
-                const capituloNumber = Number(capitulo || NaN);
-                if (Number.isNaN(capituloNumber)) {
-                    console.warn(
-                        "Nos deram um capítulo inválido (%s) para a matéria %s na lista de respostas! Vamos ignorar esse capítulo.",
-                        capitulo,
-                        materia,
-                    );
-                    continue;
-                }
-
-                if (!materiasECapitulos[materia].indexOf(capituloNumber) < 0) {
-                    console.warn(
-                        "O capítulo %s da matéria %s não existe na lista de matérias a serem respondidas! Vamos ignorar esse capítulo.",
-                        capitulo,
-                        materia,
-                    );
-                    continue;
-                }
-
-                if (!materiasCapitulosERespostas[materia]) {
-                    materiasCapitulosERespostas[materia] = {};
-                }
-
-                materiasCapitulosERespostas[materia][capituloNumber] =
-                    respostas.split("");
-            }
-        }
-
-        startTheTrolling(materiasECapitulos, materiasCapitulosERespostas);
+        startTheTrolling(data.materias, data.respostas);
     },
     url_changed: onUrlChange,
 };
 
 function init() {
-    browser.runtime.onMessage.addListener((message) => {
+    ext.runtime.onMessage.addListener((message) => {
         if (eventActions[message.action]) eventActions[message.action](message);
     });
 

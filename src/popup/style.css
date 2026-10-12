@@ -1,0 +1,235 @@
+@font-face {
+    font-family: "JetBrainsMono";
+    src: url("../../fonts/JetBrainsMonoNF.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+body {
+    width: 500px;
+    font-family: "JetBrainsMono", sans-serif;
+    padding: 10px;
+    border-radius: 50%;
+    background-color: rgb(21, 21, 21);
+    color: white;
+}
+
+h1 {
+    font-size: 4em;
+    text-align: center;
+    margin-left: 0.2em;
+}
+
+h2 {
+    display: block;
+    font-size: 2em;
+    text-align: center;
+    margin-block-start: 0.2em;
+    margin-block-end: 0.2em;
+}
+
+p {
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+}
+
+.title {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: none;
+    flex-flow: row;
+    align-self: center;
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+}
+
+.bold {
+    font-weight: 700;
+    text-align: center;
+}
+
+textarea {
+    field-sizing: content;
+    min-height: 5em;
+    min-width: 100%;
+    resize: none;
+}
+
+textarea:read-only {
+    background-color: #cccccc !important;
+    color: #333333;
+}
+
+.comecar {
+    min-width: 100%;
+    padding: 8px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.comecar:hover {
+    background-color: #0056b3;
+}
+
+/* Tabelas de parâmetros */
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: unset;
+}
+
+table input::placeholder {
+    color: #666666;
+}
+
+table tr:nth-child(even) input::placeholder {
+    color: #aaaaaa;
+}
+
+.nova-cartela,
+.remover-cartela {
+    border: none;
+    cursor: pointer;
+    border-radius: 100%;
+}
+
+.nova-cartela {
+    text-align: center;
+    background-color: rgb(0, 255, 0);
+    color: black;
+}
+
+.remover-cartela {
+    text-align: center;
+    background-color: rgb(255, 0, 0);
+    color: white;
+}
+
+td,
+th {
+    border: 1px solid white;
+    text-align: left;
+    padding: 8px;
+    width: fit-content;
+}
+
+tr:nth-child(even) {
+    background-color: white;
+    color: black;
+}
+
+/* Lista de matérias */
+
+.lista-materias tbody td:nth-child(1),
+.lista-materias tbody td:nth-child(2) {
+    padding: 0;
+}
+
+.lista-materias td:nth-child(1) input,
+.lista-materias td:nth-child(2) input {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    padding: 0;
+}
+
+.lista-materias tr > :nth-child(3) {
+    padding: 0;
+    width: 33px;
+    text-align: center;
+}
+
+.lista-materias tr > :nth-child(3) button {
+    display: block;
+    width: fit-content;
+    height: 18px;
+    min-height: 18px;
+    min-width: 18px;
+    margin: auto;
+    padding: 0;
+    border: 0;
+}
+
+/* Lista de respostas */
+
+.lista-respostas tbody td:nth-child(1) .lista-respostas tbody td:nth-child(2),
+.lista-respostas tbody td:nth-child(3) {
+    padding: 0;
+}
+
+.lista-respostas td:nth-child(1) input,
+.lista-respostas td:nth-child(2) input,
+.lista-respostas td:nth-child(3) input {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    padding: 0;
+}
+
+.lista-respostas tr > :nth-child(4) {
+    padding: 0;
+    min-width: max-content;
+    text-align: center;
+}
+
+.lista-respostas tr > :nth-child(4) button {
+    display: block;
+    width: fit-content;
+    height: 18px;
+    min-height: 18px;
+    min-width: 18px;
+    margin: auto;
+    padding: 0;
+    border: 0;
+}
+
+.caixa-texto,
+::placeholder {
+    background: none;
+    color: inherit;
+    padding-left: 8px !important;
+}
+
+/* Logs da extensão */
+
+.log-container {
+    width: 100%;
+    height: 300px;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    font-family: "JetBrainsMono", monospace;
+    padding: 10px;
+    overflow-y: auto;
+    border: 1px solid #333;
+    border-radius: 4px;
+    box-sizing: border-box;
+    line-height: 1.5;
+}
+
+.log-time {
+    color: #888888;
+}
+
+.log-info {
+    color: #4caf50;
+    font-weight: bold;
+}
+
+.log-warn {
+    color: #ff9800;
+    font-weight: bold;
+}
+
+.log-error {
+    color: #f44336;
+    font-weight: bold;
+}

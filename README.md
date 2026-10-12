@@ -3,6 +3,8 @@ Uma extensão de navegador que faz AZ Checks automaticamente para você.
 
 Você simplesmente diz quais matérias e capítulos essa extensão deve fazer automaticamente, aperta um botão e pronto! O navegador está fazendo tudo para você.
 
+As instruções de uso da extensão em si estão dísponiveis na página de popup da extensão.
+
 # Instalação
 
 1. Baixe o código fonte da extensão na aba de [Lançamentos](https://github.com/ThatOneMendes/AutoAZ/releases) e descomprima o arquivo em um lugar de fácil acesso.
@@ -24,5 +26,5 @@ Você simplesmente diz quais matérias e capítulos essa extensão deve fazer au
 
 > [!NOTE]
 > Caso você entrou na Rede AZ **antes** de instalar a extensão, você deve recarregar a página da Rede AZ.
-> No Firefox, a extensão não é instalada, mais sim carregada temporariamente.
-> Toda vez que você quiser usar o AutoAZ você terá que seguir os passos de instalação novamente.
+> No Firefox, a extensão não é instalada, mais sim carregada temporariamente, toda vez que você quiser usar o AutoAZ você terá que seguir os passos de instalação novamente.
+> **Essa extensão foi feita para computadores.**
