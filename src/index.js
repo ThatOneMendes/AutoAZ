@@ -589,7 +589,7 @@ async function startTheTrolling(listaDeMaterias, listaDeRespostas) {
 
 const eventActions = {
     start: function (data) {
-        if (inProgress) {
+        if (inProgress === true) {
             console.warn("Nós já estamos respondendo a uma lista!");
             return;
         }

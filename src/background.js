@@ -162,6 +162,11 @@ const port_handlers = {
     },
     index: async function (port) {
         port.onMessage.addListener(onPortMessage.bind(null, port));
+        port.onDisconnect.addListener(() => {
+            console.log(
+                "Um port de um script de conteúdo desconectou. (50% chance de ser erro 50% chance de ser o usuário fechando a página...)",
+            );
+        });
     },
 };
 
