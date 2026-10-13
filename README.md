@@ -5,6 +5,9 @@ Você simplesmente diz quais matérias e capítulos essa extensão deve fazer au
 
 As instruções de uso da extensão em si estão dísponiveis na página de popup da extensão.
 
+> [!WARNING]
+> **Essa extensão foi feita para computadores apenas.**
+
 # Instalação
 
 1. Baixe o código fonte da extensão na aba de [Lançamentos](https://github.com/ThatOneMendes/AutoAZ/releases) e descomprima o arquivo em um lugar de fácil acesso.
@@ -27,4 +30,3 @@ As instruções de uso da extensão em si estão dísponiveis na página de popu
 > [!NOTE]
 > Caso você entrou na Rede AZ **antes** de instalar a extensão, você deve recarregar a página da Rede AZ.
 > No Firefox, a extensão não é instalada, mais sim carregada temporariamente, toda vez que você quiser usar o AutoAZ você terá que seguir os passos de instalação novamente.
-> **Essa extensão foi feita para computadores.**

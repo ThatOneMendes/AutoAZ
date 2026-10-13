@@ -35,5 +35,5 @@
             "world": "MAIN"
         }
     ],
-    "permissions": ["storage"]
+    "permissions": ["storage", "activeTab", "tabs"]
 }
