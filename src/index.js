@@ -1,17 +1,70 @@
 /** @type {typeof browser} */
 const ext = globalThis.browser ?? globalThis.chrome;
 
-const port = ext.runtime.connect({ name: "index" });
-
 history.back = () => window.dispatchEvent(new CustomEvent("history_back"));
 
 const oldConsoleLog = console.log;
 const oldConsoleError = console.error;
 const oldConsoleWarn = console.warn;
 
+let port;
+
+function connectPort() {
+    if (port) return port;
+
+    const newPort = ext.runtime.connect({ name: "index" });
+    port = newPort;
+
+    newPort.onDisconnect.addListener(() => {
+        if (port === newPort) {
+            port = undefined;
+        }
+    });
+
+    return newPort;
+}
+
+function postPortMessage(message) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+        const currentPort = port ?? connectPort();
+
+        try {
+            currentPort.postMessage(message);
+            return true;
+        } catch (error) {
+            if (port === currentPort) {
+                port = undefined;
+            }
+
+            if (attempt === 1) {
+                oldConsoleWarn(
+                    "Falha ao mandar uma mensagem para o port:",
+                    error,
+                );
+                return false;
+            }
+        }
+    }
+
+    return false;
+}
+
+connectPort();
+
+window.addEventListener("pageshow", (event) => {
+    if (event.persisted) {
+        try {
+            port?.disconnect();
+        } catch {}
+
+        port = undefined;
+        connectPort();
+    }
+});
+
 console.log = function (...data) {
     oldConsoleLog(...data);
-    port.postMessage({
+    postPortMessage({
         action: "log",
         level: "LOG",
         content: utils.format(...data),
@@ -20,7 +73,7 @@ console.log = function (...data) {
 
 console.warn = function (...data) {
     oldConsoleWarn(...data);
-    port.postMessage({
+    postPortMessage({
         action: "log",
         level: "WARN",
         content: utils.format(...data),
@@ -29,7 +82,7 @@ console.warn = function (...data) {
 
 console.error = function (...data) {
     oldConsoleError(...data);
-    port.postMessage({
+    postPortMessage({
         action: "log",
         level: "ERROR",
         content: utils.format(...data),
@@ -523,68 +576,74 @@ async function solveFascicle(materia, capitulo, respostas) {
  * @param {Object<string, Object<number, Array<string>>} listaDeRespostas
  **/
 async function startTheTrolling(listaDeMaterias, listaDeRespostas) {
+    if (inProgress === true) return;
     inProgress = true;
-    port.postMessage({ action: "set_activity_state", active: true });
-    cardSolver: for (const [materia, capitulos] of Object.entries(
-        listaDeMaterias,
-    )) {
-        const card = await findElement(materia, materiaFinder, 1000).catch(() =>
-            console.warn(
-                `Não conseguimos encontrar a matéria com nome "${materia}"! Têm certeza de que você escreveu o nome correto?`,
-            ),
-        );
-        if (!card) {
-            if (!errors[materia]) {
-                errors[materia] = {};
-            }
-            errors[materia][0] =
-                "Não conseguimos encontrar o card dessa matéria, todos os capítulos dessa matéria não foram automatizados.";
-            continue;
-        }
 
-        await utils.delay(utils.semiBelievableDelay());
-
-        card.click();
-
-        for (const capitulo of capitulos) {
-            let arrayRespostas;
-            const respostas = listaDeRespostas[materia];
-            if (respostas) arrayRespostas = respostas[capitulo];
-            const shouldWeStay = await solveFascicle(
-                materia,
-                capitulo,
-                arrayRespostas,
+    try {
+        postPortMessage({ action: "set_activity_state", active: true });
+        cardSolver: for (const [materia, capitulos] of Object.entries(
+            listaDeMaterias,
+        )) {
+            const card = await findElement(materia, materiaFinder, 1000).catch(
+                () =>
+                    console.warn(
+                        `Não conseguimos encontrar a matéria com nome "${materia}"! Têm certeza de que você escreveu o nome correto?`,
+                    ),
             );
-            if (shouldWeStay === false) break cardSolver;
-        }
-
-        history.back();
-    }
-
-    port.postMessage({ action: "set_activity_state", active: false });
-    console.log("Terminamos!");
-
-    if (Object.keys(errors).length > 0) {
-        console.warn(
-            "Porém! O AutoAZ NÃO conseguiu automatizar alguns capítulos de algumas matérias devido a imprevistos!",
-        );
-        console.warn(
-            "A seguir vem uma lista das matérias e seus capítulos que não foram automatizados, junto com o motivo.",
-        );
-        for (const [materia, capitulos] of Object.entries(errors)) {
-            console.warn("/----------/");
-            console.warn(materia);
-            for (const [capitulo, erro] of Object.entries(capitulos)) {
-                console.warn("Capítulo %d: %s", capitulo, erro);
+            if (!card) {
+                if (!errors[materia]) {
+                    errors[materia] = {};
+                }
+                errors[materia][0] =
+                    "Não conseguimos encontrar o card dessa matéria, todos os capítulos dessa matéria não foram automatizados.";
+                continue;
             }
+
+            await utils.delay(utils.semiBelievableDelay());
+
+            card.click();
+
+            for (const capitulo of capitulos) {
+                let arrayRespostas;
+                const respostas = listaDeRespostas[materia];
+                if (respostas) arrayRespostas = respostas[capitulo];
+                const shouldWeStay = await solveFascicle(
+                    materia,
+                    capitulo,
+                    arrayRespostas,
+                );
+                if (shouldWeStay === false) break cardSolver;
+            }
+
+            history.back();
         }
 
-        console.warn("Sentimos muito por isso.");
+        console.log("Terminamos!");
+
+        if (Object.keys(errors).length > 0) {
+            console.warn(
+                "Porém! O AutoAZ NÃO conseguiu automatizar alguns capítulos de algumas matérias devido a imprevistos!",
+            );
+            console.warn(
+                "A seguir vem uma lista das matérias e seus capítulos que não foram automatizados, junto com o motivo.",
+            );
+            for (const [materia, capitulos] of Object.entries(errors)) {
+                console.warn("/----------/");
+                console.warn(materia);
+                for (const [capitulo, erro] of Object.entries(capitulos)) {
+                    console.warn("Capítulo %d: %s", capitulo, erro);
+                }
+            }
+
+            console.warn("Sentimos muito por isso.");
+        }
+    } catch (e) {
+        console.error("Erro inesperado durante a automação: ", e);
+    } finally {
+        postPortMessage({ action: "set_activity_state", active: false });
+        errors = {};
+        inProgress = false;
     }
-
-    errors = {};
-
-    inProgress = false;
 }
 
 const eventActions = {
