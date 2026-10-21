@@ -6,14 +6,14 @@ const DEFAULT_POPUP_STATE = {
 
 const ACTION_ICONS = {
     [true]: {
-        [16]: "icons/icon16_1.png",
-        [32]: "icons/icon32_1.png",
-        [64]: "icons/icon64_1.png",
+        [16]: "../icons/icon16_1.png",
+        [32]: "../icons/icon32_1.png",
+        [64]: "../icons/icon64_1.png",
     },
     [false]: {
-        [16]: "icons/icon16_0.png",
-        [32]: "icons/icon32_0.png",
-        [64]: "icons/icon64_0.png",
+        [16]: "../icons/icon16_0.png",
+        [32]: "../icons/icon32_0.png",
+        [64]: "../icons/icon64_0.png",
     },
 };
 
@@ -133,10 +133,12 @@ const messageHandlers = {
             return console.warn(
                 "Não podemos trocar o ícone de uma aba que não existe...",
             );
-        ext.action.setIcon({
-            tabId: tabID,
-            path: ACTION_ICONS[message.active === true],
-        });
+        ext.action
+            .setIcon({
+                tabId: tabID,
+                path: ACTION_ICONS[message.active === true],
+            })
+            .catch(console.error);
     },
 };
 

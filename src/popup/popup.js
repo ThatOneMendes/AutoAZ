@@ -1,7 +1,58 @@
 /** @type {typeof browser} */
 const ext = globalThis.browser ?? globalThis.chrome;
 
-const port = ext.runtime.connect({ name: "popup" });
+let port;
+let messageListeners = [];
+
+function listenPortMessage(func) {
+    if (messageListeners.includes(func)) return;
+    messageListeners.push(func);
+}
+
+function connectPort() {
+    if (port) return port;
+
+    const newPort = ext.runtime.connect({ name: "popup" });
+    port = newPort;
+
+    newPort.onDisconnect.addListener(() => {
+        if (port === newPort) {
+            port = undefined;
+        }
+    });
+
+    for (const listener of messageListeners) {
+        port.onMessage.addListener(listener);
+    }
+
+    return newPort;
+}
+
+function postPortMessage(message) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+        const currentPort = port ?? connectPort();
+
+        try {
+            currentPort.postMessage(message);
+            return true;
+        } catch (error) {
+            if (port === currentPort) {
+                port = undefined;
+            }
+
+            if (attempt === 1) {
+                oldConsoleWarn(
+                    "Falha ao mandar uma mensagem para o port:",
+                    error,
+                );
+                return false;
+            }
+        }
+    }
+
+    return false;
+}
+
 let tabID = null;
 
 let estadoDePopupAtual = {
@@ -79,7 +130,7 @@ function logFlush(data) {
 }
 
 function uploadCurrentState() {
-    port.postMessage({
+    postPortMessage({
         action: "popup_update_state",
         subjectList: listaDeMaterias.value,
         answerList: listaDeRespostas.value,
@@ -119,7 +170,7 @@ function formInputAlterado() {
         }
     }
 
-    port.postMessage({
+    postPortMessage({
         action: "popup_update_state",
         subjectList: estadoMaterias,
         answerList: estadoRespostas,
@@ -261,20 +312,22 @@ async function init() {
     }
     tabID = tab.id;
 
-    port.onMessage.addListener((message) => {
+    listenPortMessage((message) => {
         const action = actionFunctions[message.action];
         if (!action) return;
         action(message);
     });
 
-    port.postMessage({
+    connectPort();
+
+    postPortMessage({
         action: "popup_init",
         tabID,
     });
 
     console.log = function (...args) {
         oldConsoleLog(...args);
-        port.postMessage({
+        postPortMessage({
             action: "log",
             level: "LOG",
             content: format(...args),
@@ -284,7 +337,7 @@ async function init() {
 
     console.warn = function (...args) {
         oldConsoleWarn(...args);
-        port.postMessage({
+        postPortMessage({
             action: "log",
             level: "WARN",
             content: format(...args),
@@ -294,15 +347,15 @@ async function init() {
 
     console.error = function (...args) {
         oldConsoleError(...args);
-        port.postMessage({
+        postPortMessage({
             action: "log",
             level: "ERROR",
             content: format(...args),
             tabID,
         });
     };
-
-    formComecar.addEventListener("submit", startButtonClicked);
 }
+
+formComecar.addEventListener("submit", startButtonClicked);
 
 init();
